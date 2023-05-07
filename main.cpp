@@ -16,9 +16,9 @@ const int height = 800;
 
 TGAImage shadowbuffer;
 
-Vec3f light_dir(1, 1, 3);   // ¹âÔ´Î»ÖÃ
+Vec3f light_dir(1, 1, 3);   // ï¿½ï¿½Ô´Î»ï¿½ï¿½
 Vec3f center(0, 0, 0);
-Vec3f eye(1, 1, 3);     //Ïà»úÎ»ÖÃ
+Vec3f eye(1, 1, 3);     //ï¿½ï¿½ï¿½Î»ï¿½ï¿½
 Vec3f up(0, 1, 0);
 
 struct GourauShader : public IShader {
@@ -37,7 +37,7 @@ struct GourauShader : public IShader {
 	virtual bool fragment(Vec3f barycen, TGAColor& color)
 	{
 		float intensity = varying_intensity * barycen;
-		Vec2f uv = varying_uv * barycen; //Í¨¹ýÈý¸ö¶¥µãµÄ×ø±ê²åÖµµÃµ½µÄ×ø±ê
+		Vec2f uv = varying_uv * barycen; //Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		Vec3f n = proj<3>(uniform_MIT * embed<4>(model->normal(uv))).normalize();
 		Vec3f l = proj<3>(uniform_M * embed<4>(light_dir)).normalize();
 		//r is the reflection of light
@@ -49,12 +49,12 @@ struct GourauShader : public IShader {
 		float spec = pow(std::max(r.z, 0.0f), model->specular(uv));
 		TGAColor  c = model->diffuse(uv);
 		color = c;
-		//Ô­À´ÊÇcolor * diff     ambient 5/ diff 1/ spec 0.6
+		//Ô­ï¿½ï¿½ï¿½ï¿½color * diff     ambient 5/ diff 1/ spec 0.6
 		for (int i = 0; i < 3; i++) color[i] = std::min<float>(5 + c[i] * (diff + .6 * spec), 255);
 		return false;
 	}
 };
-
+//test 11
 struct PhongShader : public IShader {  
 	mat<2, 3, float> varying_uv;
 	mat<3, 3, float> varying_nrm;
@@ -139,7 +139,7 @@ struct Shader : public IShader {
 		sb_p = sb_p / sb_p[3];
 		float shadow = 0.3 + 0.7 * (shadowbuffer.get(sb_p[0], sb_p[1])[0] < sb_p[2]   + 43.34);
 		float intensity = varying_intensity * barycen;
-		Vec2f uv = varying_uv * barycen; //Í¨¹ýÈý¸ö¶¥µãµÄ×ø±ê²åÖµµÃµ½µÄ×ø±ê
+		Vec2f uv = varying_uv * barycen; //Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		Vec3f n = proj<3>(uniform_MIT * embed<4>(model->normal(uv))).normalize();
 		Vec3f l = proj<3>(uniform_M * embed<4>(light_dir)).normalize();
 		//r is the reflection of light
@@ -151,7 +151,7 @@ struct Shader : public IShader {
 		float spec = pow(std::max(r.z, 0.0f), model->specular(uv));
 		TGAColor  c = model->diffuse(uv);
 		color = c;
-		//Ô­À´ÊÇcolor * diff     ambient 5/ diff 1/ spec 0.6
+		//Ô­ï¿½ï¿½ï¿½ï¿½color * diff     ambient 5/ diff 1/ spec 0.6
 		for (int i = 0; i < 3; i++) color[i] = std::min<float>(5 + c[i] * shadow* (diff + .6 * spec), 255);
 		return false;
 	}
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
 	}
 	TGAImage zbuffer(width, height, TGAImage::GRAYSCALE);
 	shadowbuffer = TGAImage(width, height, TGAImage::GRAYSCALE);
-	//zbuffer he shadow buffer ¶ÔÓ¦µÄ¼¸¸ö¾ØÕó²»Í¬
+	//zbuffer he shadow buffer ï¿½ï¿½Ó¦ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬
 	light_dir.normalize();
 	
 
@@ -188,7 +188,7 @@ int main(int argc, char** argv)
 	//shader.uniform_MIT = (projection * modelView).invert_transpose(); // uniform pass constant parameters 
 	for (int i = 0; i < model->nfaces(); i++)
 	{
-		Vec4f screen_coords[3]; //3¸ö¶¥µã
+		Vec4f screen_coords[3]; //3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		for (int j = 0; j < 3; j++)
 		{
 			screen_coords[j] =  depthShader.vertex(i, j);
@@ -210,6 +210,7 @@ int main(int argc, char** argv)
 		shader.uniform_M = projection * modelView;
 		shader.uniform_MIT = (projection * modelView).transpose();
 		shader.uniform_Mshadow = M * (viewPort * projection * modelView).invert(); // tail to transform frame buffer to object, and front transform object to shadow buffer
+		//here build the relationship between frame buffer and shadow buffer//// frame screen -> shadow screen
 		Vec4f screen_coords[3];
 		for (int i = 0; i < model->nfaces(); i++) {
 			for (int j = 0; j < 3; j++) {
@@ -224,6 +225,7 @@ int main(int argc, char** argv)
 	delete model;
 	return 0;
 }
-
+//nothing
+//test 
 
 //main funciton is the shader program
